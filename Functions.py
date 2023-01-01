@@ -42,3 +42,13 @@ def load_image(name, colorkey=None):
     else:
         image = image.convert_alpha()
     return image
+
+
+def getEquipment():
+    f = open("txt/Equipment.txt", 'r')
+    lines = ''.join((f.readlines())).split('\n')
+    print(lines)
+    crediti = lines[0]
+    equipment = lines[1].split(', ')
+    f.close()
+    return crediti, equipment

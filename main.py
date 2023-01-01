@@ -15,7 +15,6 @@ if __name__ == '__main__':
     window = 'Меню'
     menu = Menu(screen, size, textColor)  # Создаём меню
     play = Play(screen, size, './decor/buttons/BtnBack.png')
-
     while running:
         screen.fill(screenColor)  # Заполняем экран соответствующим цветом
         # Рисуем 3 кнопки:
