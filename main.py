@@ -2,7 +2,8 @@ import pygame
 
 from Menu import Menu
 from Play import Play
-from Functions import drawMenu, drawPlay
+from Equipment import Equipment
+from Functions import drawMenu, drawPlay, drawEquipment
 
 if __name__ == '__main__':
     pygame.init()
@@ -15,6 +16,7 @@ if __name__ == '__main__':
     window = 'Меню'
     menu = Menu(screen, size, textColor)  # Создаём меню
     play = Play(screen, size, './decor/buttons/BtnBack.png')
+    equipment = Equipment(screen, size, './decor/buttons/BtnBack.png')
     while running:
         screen.fill(screenColor)  # Заполняем экран соответствующим цветом
         # Рисуем 3 кнопки:
@@ -25,4 +27,6 @@ if __name__ == '__main__':
             if event.type == pygame.MOUSEBUTTONUP:  # Если происходит нажатие мыши, проверяем, была ли нажата кнопка
                 if menu.btnClick(event.pos) == 'Играть':
                     print(drawPlay(play, screenColor))
+                if menu.btnClick(event.pos) == 'Снаряжение':
+                    print(drawEquipment(equipment, screenColor))
         pygame.display.flip()  # Обновляем экран

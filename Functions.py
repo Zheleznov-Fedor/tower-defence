@@ -83,3 +83,22 @@ def drawPlay(play, screenColor):
                         print(click)
         pygame.display.flip()
     return
+
+
+def drawEquipment(equipment, screenColor):
+    running = True
+    while running:
+        equipment.screen.fill(screenColor)
+        equipment.screen.set_alpha(200)
+        equipment.drawSeparator()
+        equipment.drawBack()
+        equipment.drawCells()
+        drawCrediti(equipment.screen, equipment.screenSize)
+        drawHeader('Снаряжение', equipment.screen, equipment.screenSize)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:  # Если происходит выход из окна, заканчиваем программу
+                running = False
+            if event.type == pygame.MOUSEBUTTONUP:  # Если происходит нажатие мыши, проверяем, была ли нажата кнопка
+                pass
+        pygame.display.flip()
+    return
