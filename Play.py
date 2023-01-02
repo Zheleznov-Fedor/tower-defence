@@ -23,7 +23,7 @@ class Play:
             color = (0, 255, 0)
             change = -100
         elif text == 'Средний':
-            color = (125, 125, 0)
+            color = (255, 255, 0)
             change = 0
         elif text == 'Сложный':
             color = (255, 0, 0)
@@ -45,7 +45,7 @@ class Play:
     def drawBack(self):
         image = load_image(self.name)
         image = pygame.transform.scale(image, (32, 32))
-        self.screen.blit(image, (10, 10))
+        self.screen.blit(image, (10, 15))
 
     def btnClick(self, coords):
         x, y = coords

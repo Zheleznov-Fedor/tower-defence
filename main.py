@@ -10,7 +10,7 @@ if __name__ == '__main__':
     size = width, height = 1600, 900  # Размер окна
     screen = pygame.display.set_mode(size)  # Задаём экран для работы с ним
     running = True  # Работа программы
-    screenColor = (255, 255, 255)  # Цвет экрана
+    screenColor = (255, 245, 238)  # Цвет экрана
     textColor = (0, 0, 0)  # Цвет текста
     window = 'Меню'
     menu = Menu(screen, size, textColor)  # Создаём меню
@@ -24,5 +24,5 @@ if __name__ == '__main__':
                 running = False
             if event.type == pygame.MOUSEBUTTONUP:  # Если происходит нажатие мыши, проверяем, была ли нажата кнопка
                 if menu.btnClick(event.pos) == 'Играть':
-                    print(drawPlay(play))
+                    print(drawPlay(play, screenColor))
         pygame.display.flip()  # Обновляем экран
