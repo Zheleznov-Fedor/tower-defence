@@ -1,11 +1,12 @@
 import pygame
+from Functions import black
 
 
 class Menu:
-    def __init__(self, screen, screenSize, textColor):
+    def __init__(self, screen, screenSize):
         self.screen = screen  # Экран
         self.screenSize = screenSize  # Размер экрана
-        self.textColor = textColor  # Цвет текста
+        self.textColor = black  # Цвет текста
         self.font = pygame.font.Font(None, 100)  # Размер шрифта
         self.width, self.height = screenSize  # Ширина и высота экрана
         self.xRect = self.width  # Граница начала кнопки

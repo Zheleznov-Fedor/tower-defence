@@ -3,6 +3,9 @@ import os
 import sys
 
 
+black = (30, 30, 30)
+
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
@@ -21,10 +24,10 @@ def load_image(name, colorkey=None):
 
 def drawHeader(name, screen, size):
     font = pygame.font.Font(None, 75)
-    text = font.render(name, True, (0, 0, 0))
+    text = font.render(name, True, black)
     width, height = size  # Ширина и высота экрана
     x, y = width // 2 - text.get_width() // 2, 10
-    pygame.draw.line(screen, (0, 0, 0), (0, 65), (width, 65), width=2)
+    pygame.draw.line(screen, black, (0, 65), (width, 65), width=2)
     screen.blit(text, (x, y))
 
 
@@ -45,7 +48,7 @@ def getCrediti():
 def drawCrediti(screen, size):
     font = pygame.font.Font(None, 40)
     crediti = getCrediti()
-    text = font.render(': ' + crediti, True, (0, 0, 0))
+    text = font.render(': ' + crediti, True, black)
     image = load_image('./decor/money/Crediti.png')
     image = pygame.transform.scale(image, (64, 64))
     width, height = size  # Ширина и высота экрана
@@ -64,10 +67,7 @@ def drawPlay(play, screenColor):
     running = True
     while running:
         play.screen.fill(screenColor)
-        play.drawMode("Лёгкий", 1)
-        play.drawMode("Средний", 2)
-        play.drawMode("Сложный", 3)
-        play.drawBack()
+        play.doPlay()
         drawCrediti(play.screen, play.screenSize)
         drawHeader('Играть', play.screen, play.screenSize)
         for event in pygame.event.get():
@@ -90,15 +90,18 @@ def drawEquipment(equipment, screenColor):
     while running:
         equipment.screen.fill(screenColor)
         equipment.screen.set_alpha(200)
-        equipment.drawSeparator()
-        equipment.drawBack()
-        equipment.drawCells()
+        equipment.doEquipment()
         drawCrediti(equipment.screen, equipment.screenSize)
         drawHeader('Снаряжение', equipment.screen, equipment.screenSize)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # Если происходит выход из окна, заканчиваем программу
                 running = False
             if event.type == pygame.MOUSEBUTTONUP:  # Если происходит нажатие мыши, проверяем, была ли нажата кнопка
-                pass
+                click = equipment.btnClick(event.pos)
+                if click is not None:
+                    if click == 'Назад':
+                        return
+                    else:
+                        print(click)
         pygame.display.flip()
     return

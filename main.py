@@ -12,9 +12,8 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)  # Задаём экран для работы с ним
     running = True  # Работа программы
     screenColor = (255, 245, 238)  # Цвет экрана
-    textColor = (0, 0, 0)  # Цвет текста
     window = 'Меню'
-    menu = Menu(screen, size, textColor)  # Создаём меню
+    menu = Menu(screen, size)  # Создаём меню
     play = Play(screen, size, './decor/buttons/BtnBack.png')
     equipment = Equipment(screen, size, './decor/buttons/BtnBack.png')
     while running:

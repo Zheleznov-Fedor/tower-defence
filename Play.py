@@ -1,5 +1,5 @@
 import pygame
-from Functions import load_image
+from Functions import load_image, black
 
 
 class Play:
@@ -60,3 +60,9 @@ class Play:
                     - 10 <= y <= self.height // 2 - btn.get_height() // 2 + 100 * \
                     (i - 1) + 10 + btn.get_height():
                 return self.btns[i]  # Если да, то возвращаем кнопку
+
+    def doPlay(self):
+        self.drawMode("Лёгкий", 1)
+        self.drawMode("Средний", 2)
+        self.drawMode("Сложный", 3)
+        self.drawBack()
