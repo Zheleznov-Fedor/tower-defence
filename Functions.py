@@ -38,11 +38,38 @@ def getEquipment():
     return equipment
 
 
+def addEquipment(defender):
+    f = open("txt/Equipment.txt", 'r')
+    # Достаём остальные настройки для записи их обратно без изменений
+    lines = ''.join(f.readlines()).split('\n')
+    crediti = lines[0]
+    equipment = lines[1].split(', ')
+    equipment.append(defender)
+    f.close()
+    f = open("txt/Equipment.txt", 'w')
+    print(crediti, file=f)
+    print(', '.join(equipment), file=f, end='')
+    f.close()
+
+
 def getCrediti():
     f = open("txt/Equipment.txt", 'r')
     crediti = ''.join((f.readlines())).split('\n')[0]
     f.close()
     return crediti
+
+
+def addCrediti(howMany):
+    f = open("txt/Equipment.txt", 'r')
+    # Достаём остальные настройки для записи их обратно без изменений
+    lines = ''.join(f.readlines()).split('\n')
+    crediti = lines[0]
+    equipment = lines[1]
+    f.close()
+    f = open("txt/Equipment.txt", 'w')
+    print(str(int(crediti) + howMany), file=f)
+    print(equipment, file=f, end='')
+    f.close()
 
 
 def drawCrediti(screen, size):
