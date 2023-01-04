@@ -2,8 +2,9 @@ import pygame
 import os
 import sys
 
-
 black = (30, 30, 30)
+allEquipment = {'Solider': '0', 'Gun': '500', 'Farm': '1000',
+                'Plane': '1500', 'RocketLauncher': '2000', 'Laser': '2500'}
 
 
 def load_image(name, colorkey=None):
@@ -72,6 +73,13 @@ def addCrediti(howMany):
     f.close()
 
 
+def noMoney(screen, screenSize):
+    font = pygame.font.Font(None, 75)  # Размер шрифта
+    text = font.render('Недостаточно средств!', True, (255, 36, 0))
+    width, height = screenSize  # Ширина и высота экрана
+    screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2))
+
+
 def drawCrediti(screen, size):
     font = pygame.font.Font(None, 40)
     crediti = getCrediti()
@@ -114,21 +122,41 @@ def drawPlay(play, screenColor):
 
 def drawEquipment(equipment, screenColor):
     running = True
+    wantBuy = False
+    whatBuy = ''
     while running:
         equipment.screen.fill(screenColor)
         equipment.screen.set_alpha(200)
         equipment.doEquipment()
         drawCrediti(equipment.screen, equipment.screenSize)
         drawHeader('Снаряжение', equipment.screen, equipment.screenSize)
+        if wantBuy:
+            equipment.drawIfBuy()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # Если происходит выход из окна, заканчиваем программу
                 running = False
             if event.type == pygame.MOUSEBUTTONUP:  # Если происходит нажатие мыши, проверяем, была ли нажата кнопка
+                if wantBuy:
+                    buy = equipment.ifBuyClick(event.pos)
+                    if buy == 'Yes':
+                        addEquipment(whatBuy)
+                        addCrediti(-int(allEquipment[whatBuy]))
+                        wantBuy = False
+                    elif buy == 'No':
+                        wantBuy = False
                 click = equipment.btnClick(event.pos)
                 if click is not None:
                     if click == 'Назад':
                         return
                     else:
-                        print(click)
+                        whatBuy = click
+                        myEquipment = getEquipment()
+                        if click not in myEquipment:
+                            needCrediti = int(allEquipment[whatBuy])
+                            myCrediti = int(getCrediti())
+                            if myCrediti >= needCrediti:
+                                wantBuy = True
+                            else:
+                                noMoney(equipment.screen, equipment.screenSize)
         pygame.display.flip()
     return

@@ -20,13 +20,13 @@ class Play:
 
     def drawMode(self, text, n):  # Функция отрисовки кнокпи
         if text == 'Лёгкий':
-            color = (0, 255, 0)
+            color = (152, 255, 152)
             change = -100
         elif text == 'Средний':
-            color = (255, 255, 0)
+            color = (237, 255, 33)
             change = 0
         elif text == 'Сложный':
-            color = (255, 0, 0)
+            color = (255, 36, 0)
             change = 100
         btn = self.font.render(text, True, color)  # Создаём кнопку
         x, y = (self.width // 2 - btn.get_width() // 2,
@@ -46,6 +46,7 @@ class Play:
         image = load_image(self.name)
         image = pygame.transform.scale(image, (32, 32))
         self.screen.blit(image, (10, 15))
+
 
     def btnClick(self, coords):
         x, y = coords

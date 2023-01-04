@@ -39,7 +39,8 @@ class Menu:
             # Создаём уже существующую кнопку для определения соответствующего ей прямоугольника
             btn = self.font.render(self.btns[i], True, self.textColor)
             # Проверяем, попадают ли данные координаты в прямоугольник кнопки
-            if x >= self.xRect - 10 and x <= self.xRect + 10 + self.widthRect \
-                    and y >= self.height // 2 - btn.get_height() // 2 + 100 * i - 10 \
-                    and y <= self.height // 2 - btn.get_height() // 2 + 100 * i + 10 + btn.get_height():
+            if self.xRect - 10 <= x <= self.xRect + 10 + self.widthRect \
+                    and self.height // 2 - btn.get_height() // 2 + 100 * i \
+                    - 10 <= y <= self.height // 2 - btn.get_height() // 2 + 100 * \
+                    i + 10 + btn.get_height():
                 return self.btns[i]  # Если да, то возвращаем кнопку

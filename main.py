@@ -3,7 +3,7 @@ import pygame
 from Menu import Menu
 from Play import Play
 from Equipment import Equipment
-from Functions import drawMenu, drawPlay, drawEquipment
+from Functions import drawMenu, drawPlay, drawEquipment, addCrediti, addEquipment
 
 if __name__ == '__main__':
     pygame.init()
@@ -12,7 +12,6 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)  # Задаём экран для работы с ним
     running = True  # Работа программы
     screenColor = (255, 245, 238)  # Цвет экрана
-    window = 'Меню'
     menu = Menu(screen, size)  # Создаём меню
     play = Play(screen, size, './decor/buttons/BtnBack.png')
     equipment = Equipment(screen, size, './decor/buttons/BtnBack.png')
