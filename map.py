@@ -117,21 +117,67 @@ class Tile(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, group):
         super().__init__(group)
+        self.orig_image = load_image('./enemy/0.png')
         self.image = load_image('./enemy/0.png')
-        size = 100
-        self.image = pygame.transform.scale(self.image, (size, size))
+        height = 50
+        self.image = pygame.transform.scale(self.image, (48 * height / 56, height))
+        self.orig_image = pygame.transform.scale(self.orig_image, (48 * height / 56, height))
         self.rect = self.image.get_rect()
-        self.start = (size * -0.5 - 24, size * 0.5)
-        self.rect.x = size * -0.5 - 24
-        self.rect.y = size * 0.5
-        self.path = [(1, 0, 0), (2, 0, 0), (3, 0, 0), (4, 0, 0), (4, 1, 1), (4, 2, 0)]
+
+        self.start = (-36, 100 - 50 * 0.5)
+        self.rect.x = self.start[0]
+        self.rect.y = self.start[1]
+        self.rect.w = 30
+        self.rect.width = 30
+
+        self.path = [(1, 0, 0), (2, 0, 0), (3, 0, 0), (3, 0, 1), (4, 0, 0), (4, 1, 0), (4, 1, 1), (4, 2, 0), (3, 2, 0), (2, 2, 0), (1, 2, 0), (0, 2, 0)]
         self.path_pos = 0
         self.grid_pos = (0, 0)
-        print(self.grid_pos)
+        self.is_came_out = True
+        self.is_rotating = False
+        self.rotating_direction = 0
+        self.rotating_pos = 0
+
+    def bezier(self, p0, p1, p2, t):
+        p0 = [64 + (p0[0] - 1) * 100, 75 + (p0[1]) * 100]
+        p1 = [64 + (p1[0] - 1) * 100, 75 + (p1[1]) * 100]
+        p2 = [64 + (p2[0] - 1) * 100, 75 + (p2[1]) * 100]
+        print(p0, p1, p2)
+        px = p0[0] * (1 - t) ** 2 + 2 * (1 - t) * t * p1[0] + p2[0] * t ** 2
+        py = p0[1] * (1 - t) ** 2 + 2 * (1 - t) * t * p1[1] + p2[1] * t ** 2
+        return px, py
+
+    def rot_center(self, angle):
+        self.image = pygame.transform.rotate(self.orig_image, angle)
 
     def update(self, *args):
-        if self.path_pos < len(self.path):
-            if self.rect.x - self.start[0] != 100 and self.rect.y - self.start[1] != 100:
+        if not self.is_came_out:
+            if self.path[0][0] > self.grid_pos[0]:
+                self.rect.x += 1
+
+                if self.rect.x == 0:
+                    self.is_came_out = True
+            elif self.path[0][0] != self.grid_pos[0]:
+                self.rect.x -= 1
+            elif self.path[0][1] > self.grid_pos[1]:
+                self.rect.y += 1
+
+                if self.rect.y == 0:
+                    self.is_came_out = True
+            elif self.path[0][1] != self.grid_pos[1]:
+                self.rect.y -= 1
+        elif self.path_pos < len(self.path):
+            if self.is_rotating:
+                self.rect.x, self.rect.y = self.bezier(*self.path[self.path_pos:self.path_pos + 3],
+                                                       round(self.rotating_pos / 180, 3))
+                self.rotating_pos = round(self.rotating_pos + 0.9, 3)
+                self.rot_center(-self.rotating_pos / 2 * self.rotating_direction)
+                if self.rotating_pos == 180:
+                    self.orig_image = pygame.transform.rotate(self.orig_image, -90 * self.rotating_direction)
+                    self.rotating_pos = 0
+                    self.is_rotating = False
+                    self.path_pos += 2
+            elif self.rect.x - self.start[0] != 100 and self.rect.y - self.start[1] != 100:
                 if self.path[self.path_pos][0] > self.grid_pos[0]:
                     self.rect.x += 1
                 elif self.path[self.path_pos][0] != self.grid_pos[0]:
@@ -144,17 +190,10 @@ class Enemy(pygame.sprite.Sprite):
                 self.grid_pos = self.path[self.path_pos]
                 self.path_pos += 1
                 self.start = (self.rect.x, self.rect.y)
-                if self.path[self.path_pos][2]:
-                    self.image = pygame.transform.rotate(self.image, -90)
-                print(self.grid_pos)
-
-            # if self.rect.x - self.start[0] != 100:
-            #     self.rect.x += 1
-            # else:
-            #     self.grid_pos[0] += 1
-            #     self.path_pos += 1
-            #     self.start = (self.rect.x, self.rect.y)
-            #     print(self.grid_pos)
+                if self.path_pos < len(self.path):
+                    self.is_rotating = self.path[self.path_pos][2]
+                    if self.is_rotating:
+                        self.rotating_direction = self.is_rotating
 
 
 if __name__ == '__main__':
@@ -163,12 +202,13 @@ if __name__ == '__main__':
     pygame.display.set_caption('Map test')
 
     running = True
-    fps = 120
+    fps = 90
     clock = pygame.time.Clock()
 
     all_sprites = pygame.sprite.Group()
 
     build_map('test.csv', all_sprites)
+    x = Enemy(all_sprites)
 
     while running:
         for event in pygame.event.get():
@@ -179,6 +219,7 @@ if __name__ == '__main__':
 
         screen.fill((255, 255, 255))
 
+        x.update()
         all_sprites.draw(screen)
 
         clock.tick(fps)
