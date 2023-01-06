@@ -23,7 +23,7 @@ class Play:
             color = (152, 255, 152)
             change = -100
         elif text == 'Средний':
-            color = (237, 255, 33)
+            color = (255, 255, 0)
             change = 0
         elif text == 'Сложный':
             color = (255, 36, 0)
@@ -46,7 +46,6 @@ class Play:
         image = load_image(self.name)
         image = pygame.transform.scale(image, (32, 32))
         self.screen.blit(image, (10, 15))
-
 
     def btnClick(self, coords):
         x, y = coords

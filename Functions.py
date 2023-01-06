@@ -5,8 +5,10 @@ import sys
 black = (30, 30, 30)
 allEquipment = {'Solider': '0', 'Gun': '500', 'Farm': '1000',
                 'Plane': '1500', 'RocketLauncher': '2000', 'Laser': '2500'}
-
+enemieshp = {'lvl0': 10, 'lvl1': 25, 'lvl2': 75, 'lvl3': 200}
+enemiesreward = {'lvl0': 10, 'lvl1': 25, 'lvl2': 75, 'lvl3': 200}
 TILE_SIZE = 100
+
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -158,9 +160,12 @@ def drawPlay(play, screenColor):
 
 
 def drawEquipment(equipment, screenColor):
-    running = True
+    running, wantBuy, noplace, nomoney, lastplace = (True, False, False, False, False)
     wantBuy = False
     whatBuy = ''
+    fps = 60
+    time = 0
+    clock = pygame.time.Clock()
     while running:
         equipment.screen.fill(screenColor)
         equipment.screen.set_alpha(200)
@@ -169,6 +174,24 @@ def drawEquipment(equipment, screenColor):
         drawHeader('Снаряжение', equipment.screen, equipment.screenSize)
         if wantBuy:
             equipment.drawIfBuy()
+        if noplace:
+            equipment.noPlace()
+            time += 1
+            if time > 10:
+                noplace = False
+                time = 0
+        if nomoney:
+            equipment.noMoney()
+            time += 1
+            if time > 10:
+                nomoney = False
+                time = 0
+        if lastplace:
+            equipment.lastPlace()
+            time += 1
+            if time > 10:
+                lastplace = False
+                time = 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # Если происходит выход из окна, заканчиваем программу
                 running = False
@@ -196,16 +219,17 @@ def drawEquipment(equipment, screenColor):
                             if myCrediti >= needCrediti:
                                 wantBuy = True
                             else:
-                                equipment.noMoney()
+                                nomoney = True
                         elif click in myEquipment and click not in myInventory:
                             if len(myInventory) < 4:
                                 addInventory(click)
                             else:
-                                equipment.noPlace()
+                                noplace = True
                         elif click in myInventory:
                             if len(myInventory) > 1:
                                 delInventory(click)
                             else:
-                                equipment.lastPlace()
+                                lastplace = True
+        clock.tick(fps)
         pygame.display.flip()
     return
