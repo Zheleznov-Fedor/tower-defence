@@ -6,6 +6,7 @@ black = (30, 30, 30)
 allEquipment = {'Solider': '0', 'Gun': '500', 'Farm': '1000',
                 'Plane': '1500', 'RocketLauncher': '2000', 'Laser': '2500'}
 
+TILE_SIZE = 100
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
