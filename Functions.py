@@ -5,7 +5,8 @@ import sys
 black = (30, 30, 30)
 allEquipment = {'Solider': '0', 'Gun': '500', 'Farm': '1000',
                 'Plane': '1500', 'RocketLauncher': '2000', 'Laser': '2500'}
-
+enemieshp = {'lvl0': 10, 'lvl1': 25, 'lvl2': 75, 'lvl3': 200}
+enemiesreward = {'lvl0': 10, 'lvl1': 25, 'lvl2': 75, 'lvl3': 200}
 TILE_SIZE = 100
 
 
