@@ -33,6 +33,45 @@ def drawHeader(name, screen, size):
     screen.blit(text, (x, y))
 
 
+def getInventory():
+    f = open("txt/Equipment.txt", 'r')
+    inventory = ''.join((f.readlines())).split('\n')[2].split(', ')
+    f.close()
+    return inventory
+
+
+def addInventory(defender):
+    f = open("txt/Equipment.txt", 'r')
+    # Достаём остальные настройки для записи их обратно без изменений
+    lines = ''.join(f.readlines()).split('\n')
+    crediti = lines[0]
+    equipment = lines[1]
+    inventory = lines[2].split(', ')
+    inventory.append(defender)
+    f.close()
+    f = open("txt/Equipment.txt", 'w')
+    print(crediti, file=f)
+    print(equipment, file=f)
+    print(', '.join(inventory), file=f, end='')
+    f.close()
+
+
+def delInventory(defender):
+    f = open("txt/Equipment.txt", 'r')
+    # Достаём остальные настройки для записи их обратно без изменений
+    lines = ''.join(f.readlines()).split('\n')
+    crediti = lines[0]
+    equipment = lines[1]
+    inventory = lines[2].split(', ')
+    inventory.remove(defender)
+    f.close()
+    f = open("txt/Equipment.txt", 'w')
+    print(crediti, file=f)
+    print(equipment, file=f)
+    print(', '.join(inventory), file=f, end='')
+    f.close()
+
+
 def getEquipment():
     f = open("txt/Equipment.txt", 'r')
     equipment = ''.join((f.readlines())).split('\n')[1].split(', ')
@@ -46,11 +85,13 @@ def addEquipment(defender):
     lines = ''.join(f.readlines()).split('\n')
     crediti = lines[0]
     equipment = lines[1].split(', ')
+    inventory = lines[2]
     equipment.append(defender)
     f.close()
     f = open("txt/Equipment.txt", 'w')
     print(crediti, file=f)
-    print(', '.join(equipment), file=f, end='')
+    print(', '.join(equipment), file=f)
+    print(inventory, file=f, end='')
     f.close()
 
 
@@ -67,18 +108,13 @@ def addCrediti(howMany):
     lines = ''.join(f.readlines()).split('\n')
     crediti = lines[0]
     equipment = lines[1]
+    inventory = lines[2]
     f.close()
     f = open("txt/Equipment.txt", 'w')
     print(str(int(crediti) + howMany), file=f)
-    print(equipment, file=f, end='')
+    print(equipment, file=f)
+    print(inventory, file=f, end='')
     f.close()
-
-
-def noMoney(screen, screenSize):
-    font = pygame.font.Font(None, 75)  # Размер шрифта
-    text = font.render('Недостаточно средств!', True, (255, 36, 0))
-    width, height = screenSize  # Ширина и высота экрана
-    screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2))
 
 
 def drawCrediti(screen, size):
@@ -146,18 +182,30 @@ def drawEquipment(equipment, screenColor):
                     elif buy == 'No':
                         wantBuy = False
                 click = equipment.btnClick(event.pos)
+                print(click)
                 if click is not None:
                     if click == 'Назад':
                         return
                     else:
                         whatBuy = click
                         myEquipment = getEquipment()
+                        myInventory = getInventory()
                         if click not in myEquipment:
                             needCrediti = int(allEquipment[whatBuy])
                             myCrediti = int(getCrediti())
                             if myCrediti >= needCrediti:
                                 wantBuy = True
                             else:
-                                noMoney(equipment.screen, equipment.screenSize)
+                                equipment.noMoney()
+                        elif click in myEquipment and click not in myInventory:
+                            if len(myInventory) < 4:
+                                addInventory(click)
+                            else:
+                                equipment.noPlace()
+                        elif click in myInventory:
+                            if len(myInventory) > 1:
+                                delInventory(click)
+                            else:
+                                equipment.lastPlace()
         pygame.display.flip()
     return

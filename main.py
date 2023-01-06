@@ -3,7 +3,7 @@ import pygame
 from Menu import Menu
 from Play import Play
 from Equipment import Equipment
-from Functions import drawMenu, drawPlay, drawEquipment, addCrediti, addEquipment
+from Functions import drawMenu, drawPlay, drawEquipment
 
 if __name__ == '__main__':
     pygame.init()
