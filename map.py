@@ -2,6 +2,7 @@ import pygame
 import csv
 from Functions import load_image, TILE_SIZE
 from Enemy import Enemy
+from Tower import Tower
 
 
 def parse_tile(code):
@@ -118,28 +119,36 @@ if __name__ == '__main__':
     running = True
     fps = 90
     state = 'waiting'
-    enemies = []
     clock = pygame.time.Clock()
-    all_sprites = pygame.sprite.Group()
-    map = build_map('test.csv', all_sprites)
+    land = pygame.sprite.Group()
+    towers = pygame.sprite.Group()
+    enemies = pygame.sprite.Group()
+
+    map = build_map('test.csv', land)
     last = 0
+    # Board(all_sprites, 1, 2)
+    x = Tower(towers, 'Gun.png', 1, 2, enemies)
 
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                all_sprites.update(event)
 
         screen.fill((255, 255, 255))
 
         if last + 1500 <= pygame.time.get_ticks():
             last = pygame.time.get_ticks()
-            enemies.append(Enemy(all_sprites, '0.png', map['w'], map['h'], map['enemy_path']))
+            Enemy(enemies, '0.png', map['w'], map['h'], map['enemy_path'])
 
-        all_sprites.update()
-        all_sprites.draw(screen)
+        enemies.update()
+        towers.update()
+        land.draw(screen)
+        enemies.draw(screen)
+        towers.draw(screen)
 
+        x.update()
+
+        last += 1
         for enemy in enemies:
             enemy.draw(screen)
 
