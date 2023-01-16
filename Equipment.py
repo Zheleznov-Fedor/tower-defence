@@ -15,6 +15,8 @@ class Equipment:
         self.equipment = allEquipment
         self.font75 = pygame.font.Font(None, 75)
         self.font30 = pygame.font.Font(None, 30)
+        self.cellColor = (192, 198, 200)
+        self.lighting = None
 
     def drawSeparator(self):
         pygame.draw.line(self.screen, black, (self.width // 2, 65), (self.width // 2, self.height), width=2)
@@ -38,11 +40,11 @@ class Equipment:
             if defender not in myInventory:
                 n += 1
         for i in range(n):
-            pygame.draw.rect(self.screen, (192, 198, 200),
+            pygame.draw.rect(self.screen, self.cellColor,
                              ((self.side + 10) * (i % 4) + 10, 150 + (self.side + 10) * (i // 4), self.side, self.side),
                              0)
         for i in range(4):
-            pygame.draw.rect(self.screen, (192, 198, 200),
+            pygame.draw.rect(self.screen, self.cellColor,
                              ((self.side + 10) * i + 10 + self.width // 2, 150, self.side, self.side), 0)
 
     def drawMyEquipment(self):
@@ -52,6 +54,9 @@ class Equipment:
         i = 0
         for defender in myInventory:
             imageDefender = load_image(f'./defense/{defender}2.png')
+            if defender == self.lighting:
+                pygame.draw.rect(self.screen, (135, 206, 235),
+                                 ((self.side + 10) * i + 10 + self.width // 2, 150, self.side, self.side))
             self.screen.blit(imageDefender, ((self.side + 10) * i + 10 + self.width // 2 + self.side // 2
                                              - imageDefender.get_width() // 2,
                                              self.side // 2 - imageDefender.get_height() // 2 + 150))
@@ -75,6 +80,10 @@ class Equipment:
         imagePlus = pygame.transform.scale(imagePlus, (16, 16))
         for defender in self.equipment:
             if defender not in myInventory:
+                if defender == self.lighting:
+                    pygame.draw.rect(self.screen, (135, 206, 235),
+                                     ((self.side + 10) * (i % 4) + 10, 150 + (self.side + 10) * (i // 4), self.side,
+                                      self.side))
                 imageDefender = load_image(f'./defense/{defender}2.png')
                 self.screen.blit(imageDefender,
                                  ((self.side + 10) * (i % 4) + 10 + self.side // 2 - imageDefender.get_width() // 2,
@@ -98,6 +107,11 @@ class Equipment:
         text2 = self.font30.render('Да', True, black)
         text3 = self.font30.render('Отмена', True, black)
         x, y = (self.width // 2 - text1.get_width() // 2, self.height // 2 - text1.get_height() // 2)
+        pygame.draw.rect(self.screen, (255, 245, 238), (x - 20, y - 20, text1.get_width() + 40,
+                                                        text1.get_height() + text2.get_height() + text3.get_height()
+                                                        + 40), 0)
+        pygame.draw.rect(self.screen, black, (x - 20, y - 20, text1.get_width() + 40,
+                                              text1.get_height() + text2.get_height() + text3.get_height() + 40), 2)
         self.screen.blit(text1, (x, y))
         self.screen.blit(text2, (x + 650, y + 75))
         self.screen.blit(text3, (x + 750, y + 75))
@@ -131,6 +145,12 @@ class Equipment:
                     self.width // 2 + self.side and 150 <= y <= 150 + self.side:
                 return defender
             i += 1
+
+    def backlight(self, defender):
+        if defender in self.equipment:
+            self.lighting = defender
+        else:
+            self.lighting = None
 
     def noMoney(self):
         text = self.font75.render('Недостаточно средств!', True, (255, 36, 0))
