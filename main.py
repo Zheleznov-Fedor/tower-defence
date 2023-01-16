@@ -27,4 +27,7 @@ if __name__ == '__main__':
                     print(drawPlay(play, screenColor))
                 if menu.btnClick(event.pos) == 'Снаряжение':
                     print(drawEquipment(equipment, screenColor))
+            if event.type == pygame.MOUSEMOTION:
+                click = menu.btnClick(event.pos)
+                menu.backlight(click)
         pygame.display.flip()  # Обновляем экран

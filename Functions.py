@@ -154,7 +154,10 @@ def drawPlay(play, screenColor):
                     if click == 'Назад':
                         return
                     else:
-                        print(click)
+                        pass
+            if event.type == pygame.MOUSEMOTION:
+                click = play.btnClick(event.pos)
+                play.backlight(click)
         pygame.display.flip()
     return
 
