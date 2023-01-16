@@ -4,7 +4,6 @@ from Functions import load_image, getEquipment
 from Enemy import Enemy, TILE_SIZE
 from ShootingTower import ShootingTower, TOWERS_INFO
 from FarmTower import FarmTower
-from Missile import Missile
 
 
 class Game:
@@ -130,6 +129,14 @@ class Game:
 
         return 0
 
+    def tower_detect_mouse(self, pos):
+        for shooting_tower in self.shooting_towers.sprites():
+            if shooting_tower.rect.x <= pos[0] <= shooting_tower.rect.x + shooting_tower.rect.width and \
+                    shooting_tower.rect.y <= pos[1] <= shooting_tower.rect.y + shooting_tower.rect.height:
+                return shooting_tower
+
+        return 0
+
     def tower_place_detect_mouse(self, pos):
         places = self.map['tower_places']
 
@@ -192,6 +199,7 @@ class Game:
                         pygame.time.set_timer(NEWWAVE, self.map['waves'][self.wave - 1]['timeout'])
                     else:
                         self.game_start_state = 'win'
+                        print('WIN!!!')
                 elif event.type == ADDENEMY and self.hp > 0:
                     self.enemies.update()
                     self.shooting_towers.update()
@@ -221,6 +229,14 @@ class Game:
                         else:
                             self.is_tower_selected = False
 
+                            hover_tower = self.tower_detect_mouse(pos)
+                            if hover_tower:
+                                self.draw_rect_alpha(self.screen, (0, 0, 0, 50), (hover_tower.rect.x,
+                                                                                  hover_tower.rect.y,
+                                                                                  hover_tower.rect.width,
+                                                                                  hover_tower.rect.height))
+                                hover_tower.kill()
+
             self.screen.fill((255, 255, 255))
 
             self.land.draw(self.screen)
@@ -230,19 +246,26 @@ class Game:
             self.missiles.draw(self.screen)
             self.shooting_towers.draw(self.screen)
             self.farm_towers.draw(self.screen)
+            self.tanks.draw(self.screen)
             self.draw_header()
             self.draw_waves()
 
-            hover_tower = self.inventory_detect_mouse(pygame.mouse.get_pos())
-            if hover_tower:
-                self.draw_rect_alpha(self.screen, (0, 0, 0, 50), (10 + (hover_tower - 1) * 100, 750, 100, 140))
+            pos = pygame.mouse.get_pos()
+            hover_inventory_tower = self.inventory_detect_mouse(pos)
+            if hover_inventory_tower:
+                self.draw_rect_alpha(self.screen, (0, 0, 0, 50), (10 + (hover_inventory_tower - 1) * 100, 750, 100, 140))
 
             if self.is_tower_selected:
-                place = self.tower_place_detect_mouse(pygame.mouse.get_pos())
+                place = self.tower_place_detect_mouse(pos)
                 if place:
                     self.draw_rect_alpha(self.screen, (0, 0, 0, 50),
                                          (place[0] * TILE_SIZE, place[1] * TILE_SIZE,
                                           TILE_SIZE, TILE_SIZE))
+
+            hover_tower = self.tower_detect_mouse(pos)
+            if hover_tower:
+                self.draw_rect_alpha(self.screen, (0, 0, 0, 50), (hover_tower.rect.x, hover_tower.rect.y,
+                                                                  hover_tower.rect.width, hover_tower.rect.height))
 
             self.draw_inventory()
 
@@ -250,6 +273,7 @@ class Game:
                 self.enemies.update()
                 self.shooting_towers.update()
                 self.missiles.update()
+                self.tanks.update()
             else:
                 print('GAME OVER!!!')
 

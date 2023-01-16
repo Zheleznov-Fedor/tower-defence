@@ -3,7 +3,7 @@ from Functions import load_image, TILE_SIZE
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, group, type,  map_w, map_h, path, game_lose_heart):
+    def __init__(self, group, type, map_w, map_h, path, game_lose_heart):
         super().__init__(group)
         self.game_lose_heart = game_lose_heart
 
@@ -25,7 +25,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.w = 30
         self.rect.width = 30
 
-        self.step = 1
+        self.step = 2
 
         self.path = path
         self.path_pos = 1
@@ -80,7 +80,7 @@ class Enemy(pygame.sprite.Sprite):
             if self.is_rotating:
                 self.rect.x, self.rect.y = self.bezier(*self.path[self.path_pos:self.path_pos + 3],
                                                        round(self.rotating_pos / 90, 3))
-                self.rotating_pos = round(self.rotating_pos + 1, 3)
+                self.rotating_pos = round(self.rotating_pos + 0.4, 3)
                 self.rot_center(-self.rotating_pos * self.rotating_direction)
                 if self.rotating_pos == 90:
                     self.orig_image = pygame.transform.rotate(self.orig_image, -90 * self.rotating_direction)
