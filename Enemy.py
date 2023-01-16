@@ -3,8 +3,10 @@ from Functions import load_image, TILE_SIZE
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, group, type,  map_w, map_h, path):
+    def __init__(self, group, type,  map_w, map_h, path, game_lose_heart):
         super().__init__(group)
+        self.game_lose_heart = game_lose_heart
+
         self.orig_image = load_image('./enemy/' + type)
         self.image = load_image('./enemy/' + type)
         height = 50
@@ -22,6 +24,8 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.y = self.start[1]
         self.rect.w = 30
         self.rect.width = 30
+
+        self.step = 1
 
         self.path = path
         self.path_pos = 1
@@ -54,76 +58,86 @@ class Enemy(pygame.sprite.Sprite):
     def update(self, *args):
         if not self.is_came_out:
             if self.path[self.path_pos][0] > self.grid_pos[0]:
-                self.rect.x += 1
+                self.rect.x += self.step
                 if self.rect.x == 0:
                     self.is_came_out = True
             elif self.path[self.path_pos][0] != self.grid_pos[0]:
-                self.rect.x -= 1
+                self.rect.x -= self.step
 
                 if self.rect.x == self.map_w * TILE_SIZE:
                     self.is_came_out = True
             elif self.path[self.path_pos][1] > self.grid_pos[1]:
-                self.rect.y += 1
+                self.rect.y += self.step
 
                 if self.rect.y == 0:
                     self.is_came_out = True
             elif self.path[self.path_pos][1] != self.grid_pos[1]:
-                self.rect.y -= 1
+                self.rect.y -= self.step
 
                 if self.rect.h == self.map_h * TILE_SIZE:
                     self.is_came_out = True
         elif self.path_pos < len(self.path):
             if self.is_rotating:
                 self.rect.x, self.rect.y = self.bezier(*self.path[self.path_pos:self.path_pos + 3],
-                                                       round(self.rotating_pos / 180, 3))
-                self.rotating_pos = round(self.rotating_pos + 0.9, 3)
-                self.rot_center(-self.rotating_pos / 2 * self.rotating_direction)
-                if self.rotating_pos == 180:
+                                                       round(self.rotating_pos / 90, 3))
+                self.rotating_pos = round(self.rotating_pos + 1, 3)
+                self.rot_center(-self.rotating_pos * self.rotating_direction)
+                if self.rotating_pos == 90:
                     self.orig_image = pygame.transform.rotate(self.orig_image, -90 * self.rotating_direction)
                     self.rotating_pos = 0
                     self.is_rotating = False
                     self.path_pos += 2
             elif abs(self.rect.x - self.start[0]) != 100 and abs(self.rect.y - self.start[1]) != 100:
                 if self.path[self.path_pos][0] > self.grid_pos[0]:
-                    self.rect.x += 1
+                    self.rect.x += self.step
                 elif self.path[self.path_pos][0] != self.grid_pos[0]:
-                    self.rect.x -= 1
+                    self.rect.x -= self.step
                 if self.path[self.path_pos][1] > self.grid_pos[1]:
-                    self.rect.y += 1
+                    self.rect.y += self.step
                 elif self.path[self.path_pos][1] != self.grid_pos[1]:
-                    self.rect.y -= 1
+                    self.rect.y -= self.step
             else:
                 self.grid_pos = self.path[self.path_pos]
                 self.path_pos += 1
                 self.start = (self.rect.x, self.rect.y)
+
                 if self.path_pos < len(self.path):
                     self.is_rotating = self.path[self.path_pos][2]
                     if self.is_rotating:
-                        self.rotating_direction = self.is_rotating
+                        if self.path[self.path_pos][1] == self.path[self.path_pos + 1][1]:
+                            if self.path[self.path_pos + 1][1] > self.path[self.path_pos + 2][1]:
+                                self.rotating_direction = -1
+                            else:
+                                self.rotating_direction = 1
+                        else:
+                            if self.path[self.path_pos + 1][0] > self.path[self.path_pos + 2][0]:
+                                self.rotating_direction = -1
+                            else:
+                                self.rotating_direction = 1
         else:
             if self.path[-1][0] > self.path[-2][0]:
-                self.rect.x += 1
+                self.rect.x += self.step
 
-                if self.rect.x == self.map_w * TILE_SIZE + 60:
-                    print('gone')
+                if self.rect.x == self.map_w * TILE_SIZE + 15:
+                    self.game_lose_heart()
                     self.kill()
             elif self.path[-1][0] != self.path[-2][0]:
-                self.rect.x -= 1
+                self.rect.x -= self.step
 
-                if self.rect.x == -60:
-                    print('gone')
+                if self.rect.x == -15:
+                    self.game_lose_heart()
                     self.kill()
             if self.path[-1][1] > self.path[-2][1]:
-                self.rect.y += 1
+                self.rect.y += self.step
 
-                if self.rect.y == self.map_y * TILE_SIZE + 60:
-                    print('gone')
+                if self.rect.y == self.map_h * TILE_SIZE + 15:
+                    self.game_lose_heart()
                     self.kill()
             elif self.path[-1][1] != self.path[-2][1]:
-                self.rect.y -= 1
+                self.rect.y -= self.step
 
-                if self.rect.y == -60:
-                    print('gone')
+                if self.rect.y == -15:
+                    self.game_lose_heart()
                     self.kill()
 
     def draw(self, screen):
@@ -135,6 +149,5 @@ class Enemy(pygame.sprite.Sprite):
         self.hp -= value
 
         if self.hp <= 0:
-            print('died')
             self.kill()
             return -1

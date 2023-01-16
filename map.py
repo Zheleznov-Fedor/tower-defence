@@ -2,7 +2,7 @@ import pygame
 import csv
 from Functions import load_image, TILE_SIZE
 from Enemy import Enemy
-from Tower import Tower
+from ShootingTower import ShootingTower
 
 
 def parse_tile(code):
@@ -51,13 +51,18 @@ def parse_tile(code):
 def load_map(filname):
     with open(filname, encoding="utf8") as file:
         reader = csv.reader(file, delimiter=';', quotechar='"')
+        tower_places_types = {
+            0: 'default',
+            3: 'farm'
+        }
         res = {
             'w': 0,
             'h': 0,
             'land': [],
             'decor': [],
             'enemy_path': [],
-            'waves': []
+            'waves': [],
+            'tower_places': []
         }
         r = list(reader)
         w, h = map(int, r[0])
@@ -65,6 +70,9 @@ def load_map(filname):
         res['h'] = h
 
         for i in range(1, h + 1):
+            for x in range(w):
+                if r[i][x][0] == 'P':
+                    res['tower_places'].append((x, i - 1, tower_places_types[int(r[i][x][3:5])]))
             res['land'].append(r[i])
 
         decor_count = int(r[h + 1][0])
@@ -78,9 +86,12 @@ def load_map(filname):
 
         res['enemy_path'] = [list(map(int, point.split(','))) for point in r[h + decor_count + 2]]
 
-        waves_count = r[h + decor_count + 3]
         for wave in r[h + decor_count + 4:]:
-            res['waves'].append([tuple(map(int, elem.split(','))) for elem in wave])
+            res['waves'].append({
+                'enemies': wave[0].split(','),
+                'timeout': int(wave[1]),
+                'bonus_coins': int(wave[2])
+            })
 
         return res
 
@@ -127,7 +138,7 @@ if __name__ == '__main__':
     map = build_map('test.csv', land)
     last = 0
     # Board(all_sprites, 1, 2)
-    x = Tower(towers, 'Gun.png', 1, 2, enemies)
+    x = ShootingTower(towers, 'Gun.png', 1, 2, enemies)
 
     while running:
         for event in pygame.event.get():
