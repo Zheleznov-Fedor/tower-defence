@@ -10,8 +10,9 @@ class Play:
         self.width, self.height = screenSize  # Ширина и высота экрана
         self.xRect = self.width  # Граница начала кнопки
         self.widthRect = 0  # Граница конца кнопки
-        self.btns = []  # Список всех кнопок
+        self.btns = {}  # Словарь всех кнопок
         self.name = name  # Название картинки стрелочки
+        self.colors = {'Лёгкий': (152, 255, 152), 'Средний': (255, 255, 0), 'Сложный': (255, 36, 0)}
 
     def find(self, x, width):  # Функция определения границ кнопок
         if x < self.xRect:  # Если граница этой кнопки начинается раньше заданной, то новая и является нужной
@@ -20,14 +21,12 @@ class Play:
 
     def drawMode(self, text, n):  # Функция отрисовки кнокпи
         if text == 'Лёгкий':
-            color = (152, 255, 152)
             change = -100
         elif text == 'Средний':
-            color = (255, 255, 0)
             change = 0
         elif text == 'Сложный':
-            color = (255, 36, 0)
             change = 100
+        color = self.colors[text]
         btn = self.font.render(text, True, color)  # Создаём кнопку
         x, y = (self.width // 2 - btn.get_width() // 2,
                 self.height // 2 - btn.get_height() // 2 + change)  # Считаем координаты кнокпи
@@ -36,11 +35,14 @@ class Play:
         if self.xRect == self.width and self.widthRect == 0:  # Границы не определены
             pygame.draw.rect(self.screen, color, (x - 10, y - 10,
                                                   btn.get_width() + 20, btn.get_height() + 20), 3)
+            self.btns[text] = (x - 10, y - 10,
+                               btn.get_width() + 20, btn.get_height() + 20)
         else:  # Границы определены
             pygame.draw.rect(self.screen, color, (self.xRect - 10, y - 10,
                                                   self.widthRect + 20, btn.get_height() + 20), 3)
+            self.btns[text] = (self.xRect - 10, y - 10,
+                               self.widthRect + 20, btn.get_height() + 20)
         self.find(x, btn.get_width())  # Функция для определения границ
-        self.btns.append(text)
 
     def drawBack(self):
         image = load_image(self.name)
@@ -51,15 +53,17 @@ class Play:
         x, y = coords
         if 10 <= x <= 42 and 10 <= y <= 42:
             return 'Назад'
-        for i in range(len(self.btns)):
-            # Создаём уже существующую кнопку для определения соответствующего ей прямоугольника
-            btn = self.font.render(self.btns[i], True, (0, 0, 0))
-            # Проверяем, попадают ли данные координаты в прямоугольник кнопки
-            if self.xRect - 10 <= x <= self.xRect + 10 + self.widthRect \
-                    and self.height // 2 - btn.get_height() // 2 + 100 * (i - 1)\
-                    - 10 <= y <= self.height // 2 - btn.get_height() // 2 + 100 * \
-                    (i - 1) + 10 + btn.get_height():
-                return self.btns[i]  # Если да, то возвращаем кнопку
+        for btn in self.btns.keys():
+            x1, y1, x2, y2 = self.btns[btn]
+            if x1 <= x <= x1 + x2 and y1 <= y <= y1 + y2:
+                return btn  # Если да, то возвращаем кнопку
+
+    def backlight(self, btn):
+        self.colors['Лёгкий'] = (152, 255, 152)
+        self.colors['Средний'] = (255, 255, 0)
+        self.colors['Сложный'] = (255, 36, 0)
+        if btn in self.colors.keys():
+            self.colors[btn] = (135, 206, 235)
 
     def doPlay(self):
         self.drawMode("Лёгкий", 1)
