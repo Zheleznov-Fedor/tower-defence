@@ -61,13 +61,13 @@ TOWERS_INFO = {  # Настройки каждой башни
                 {
                     'image_filename': 'Solider2.png',  # Название файла картинки башни
                     'visible_radius': 250,  # Радиус на котором башня видит противников
-                    'shoot_delay': 400,  # Время перезарядки
+                    'shoot_delay': 1000,  # Время перезарядки
                     'shoot_damage': 15,  # Урон выстрела
                     'missile_type': 'Bullet',  # Тип боеприпаса
                     'update_price': 200  # Цена обновления на новый уровень
                 },
                 {
-                    'image_filename': 'Laser2.png',
+                    'image_filename': 'Solider22.png',
                     'visible_radius': 250,
                     'shoot_delay': 400,
                     'shoot_damage': 15,
@@ -90,15 +90,15 @@ TOWERS_INFO = {  # Настройки каждой башни
                     'visible_radius': 250,  # Радиус на котором башня видит противников
                     'shoot_delay': 400,  # Время перезарядки
                     'shoot_damage': 15,  # Урон выстрела
-                    'missile_type': 'Bullet',  # Тип боеприпаса
+                    'missile_type': 'Rocket1',  # Тип боеприпаса
                     'update_price': 200  # Цена обновления на новый уровень
                 },
                 {
-                    'image_filename': 'Plane2.png',
+                    'image_filename': 'Gun22.png',
                     'visible_radius': 250,
                     'shoot_delay': 400,
                     'shoot_damage': 15,
-                    'missile_type': 'Rocket'
+                    'missile_type': 'Rocket2'
                 }
             ]
         },
@@ -125,7 +125,7 @@ TOWERS_INFO = {  # Настройки каждой башни
                     'visible_radius': 250,
                     'shoot_delay': 400,
                     'shoot_damage': 15,
-                    'missile_type': 'Rocket'
+                    'missile_type': 'Rocket1'
                 }
             ]
         },
@@ -148,11 +148,11 @@ TOWERS_INFO = {  # Настройки каждой башни
                     'update_price': 200  # Цена обновления на новый уровень
                 },
                 {
-                    'image_filename': 'Solider2.png',
+                    'image_filename': 'Laser22.png',
                     'visible_radius': 250,
                     'shoot_delay': 400,
                     'shoot_damage': 15,
-                    'missile_type': 'Rocket'
+                    'missile_type': 'Bullet'
                 }
             ]
         },
@@ -166,28 +166,34 @@ TOWERS_INFO = {  # Настройки каждой башни
             'levels': [
                 {
                     'image_filename': 'Farm2.png',  # Название файла картинки башни
-                    'income': 300,  # Доход приносимый фермой в начале каждой волны
+                    'income': 100,  # Доход приносимый фермой в начале каждой волны
                     'update_price': 200
                 },
                 {
-                    'image_filename': 'Farm2.png',
+                    'image_filename': 'Farm22.png',
                     'income': 300,  # Доход приносимый фермой в начале каждой волны
                 }
             ]
         },
 }
 MISSILES_INFO = {
-    'Rocket': {
-        'image_filename': 'Rocket.png',  # Название файла картинки боеприпаса
+    'Rocket1': {
+        'image_filename': 'Rocket1.png',  # Название файла картинки боеприпаса
         'width_in_match': 20,  # Ширина картинки боеприпаса в матче
         'is_need_rotate': True,  # Нужен ли поворот при перемещении к цели
-        'step': 10  # Скорость боеприпаса
+        'step': 3  # Скорость боеприпаса
+    },
+    'Rocket2': {
+        'image_filename': 'Rocket2.png',  # Название файла картинки боеприпаса
+        'width_in_match': 20,  # Ширина картинки боеприпаса в матче
+        'is_need_rotate': True,  # Нужен ли поворот при перемещении к цели
+        'step': 7  # Скорость боеприпаса
     },
     'Bullet': {
         'image_filename': 'Bullet.png',
         'width_in_match': 40,
         'is_need_rotate': False,
-        'step': 30
+        'step': 15
     }
 }
 TILE_SIZE = 100

@@ -3,9 +3,10 @@ from Utils import load_image, TILE_SIZE, ENEMIES_INFO
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, group, lvl, map_w, map_h, path, game_lose_heart):
+    def __init__(self, group, lvl, map_w, map_h, path, game_lose_heart, add_money):
         super().__init__(group)
         self.game_lose_heart = game_lose_heart
+        self.add_money = add_money
 
         self.orig_image = load_image('./enemy/' + ENEMIES_INFO[lvl]['image_filename'])
         self.image = load_image('./enemy/' + ENEMIES_INFO[lvl]['image_filename'])
@@ -54,6 +55,21 @@ class Enemy(pygame.sprite.Sprite):
 
     def rot_center(self, angle):
         self.image = pygame.transform.rotate(self.orig_image, angle)
+
+    def rotation_direction(self, args):
+        x1, y1, x2, y2, x3, y3 = args
+        if y2 > y1:
+            if x3 > x1:
+                return -1
+            return 1
+        elif y1 > y2:
+            if x3 > x1:
+                return 1
+            return -1
+        elif y1 == y2:
+            if y3 > y1:
+                return 1
+            return -1
 
     def update(self, *args):
         if not self.is_came_out:
@@ -104,16 +120,10 @@ class Enemy(pygame.sprite.Sprite):
                 if self.path_pos < len(self.path):
                     self.is_rotating = self.path[self.path_pos][2]
                     if self.is_rotating:
-                        if self.path[self.path_pos][1] == self.path[self.path_pos + 1][1]:
-                            if self.path[self.path_pos + 1][1] > self.path[self.path_pos + 2][1]:
-                                self.rotating_direction = -1
-                            else:
-                                self.rotating_direction = 1
-                        else:
-                            if self.path[self.path_pos + 1][0] > self.path[self.path_pos + 2][0]:
-                                self.rotating_direction = -1
-                            else:
-                                self.rotating_direction = 1
+                        res = []
+                        for elem in [elem[0:2] for elem in self.path[self.path_pos: self.path_pos + 3]]:
+                            res.extend(elem)
+                        self.rotating_direction = self.rotation_direction(res)
         else:
             if self.path[-1][0] > self.path[-2][0]:
                 self.rect.x += self.step
@@ -149,5 +159,6 @@ class Enemy(pygame.sprite.Sprite):
         self.hp -= value
 
         if self.hp <= 0:
+            self.add_money(20)
             self.kill()
             return -1
