@@ -1,3 +1,4 @@
+# Всё, что нам нужно:
 import pygame
 from Functions import load_image, black
 
@@ -12,6 +13,7 @@ class Play:
         self.widthRect = 0  # Граница конца кнопки
         self.btns = {}  # Словарь всех кнопок
         self.name = name  # Название картинки стрелочки
+        # Словарь цветов кнопок
         self.colors = {'Лёгкий': (152, 255, 152), 'Средний': (255, 255, 0), 'Сложный': (255, 36, 0)}
 
     def find(self, x, width):  # Функция определения границ кнопок
@@ -20,13 +22,14 @@ class Play:
             self.widthRect = width
 
     def drawMode(self, text, n):  # Функция отрисовки кнокпи
+        # В зависимости от кнопки, добавляем ей изменения координат
         if text == 'Лёгкий':
             change = -100
         elif text == 'Средний':
             change = 0
         elif text == 'Сложный':
             change = 100
-        color = self.colors[text]
+        color = self.colors[text]  # Берём её цвет из словаря цветов кнопок
         btn = self.font.render(text, True, color)  # Создаём кнопку
         x, y = (self.width // 2 - btn.get_width() // 2,
                 self.height // 2 - btn.get_height() // 2 + change)  # Считаем координаты кнокпи
@@ -44,20 +47,24 @@ class Play:
                                self.widthRect + 20, btn.get_height() + 20)
         self.find(x, btn.get_width())  # Функция для определения границ
 
+    # Функция, рисующая кнопку назад
     def drawBack(self):
         image = load_image(self.name)
         image = pygame.transform.scale(image, (32, 32))
         self.screen.blit(image, (10, 15))
 
+    # Функция для определения места нажатия
     def btnClick(self, coords):
         x, y = coords
         if 10 <= x <= 42 and 10 <= y <= 42:
             return 'Назад'
+        # Это очень легко проверить, потому что есть словарь с координатами кнопок
         for btn in self.btns.keys():
             x1, y1, x2, y2 = self.btns[btn]
             if x1 <= x <= x1 + x2 and y1 <= y <= y1 + y2:
-                return btn  # Если да, то возвращаем кнопку
+                return btn
 
+    # Функция подсветки кнопок
     def backlight(self, btn):
         self.colors['Лёгкий'] = (152, 255, 152)
         self.colors['Средний'] = (255, 255, 0)
@@ -65,6 +72,7 @@ class Play:
         if btn in self.colors.keys():
             self.colors[btn] = (135, 206, 235)
 
+    # Функция отрисовки окна
     def doPlay(self):
         self.drawMode("Лёгкий", 1)
         self.drawMode("Средний", 2)

@@ -12,7 +12,7 @@ class Menu:
         self.xRect = self.width  # Граница начала кнопки
         self.widthRect = 0  # Граница конца кнопки
         self.btns = {}  # Словарь всех кнопок
-        self.colors = {}
+        self.colors = {}  # Словарь цветов кнопок
 
     def find(self, x, width):  # Функция определения границ кнопок
         if x < self.xRect:  # Если граница этой кнопки начинается раньше заданной, то новая и является нужной
@@ -42,13 +42,16 @@ class Menu:
                                self.widthRect + 20, btn.get_height() + 20)
         self.find(x, btn.get_width())  # Функция для определения границ
 
+    # Функция для определения места нажатия
     def btnClick(self, coords):
         x, y = coords
+        # Это очень легко проверить, потому что есть словарь с координатами кнопок
         for btn in self.btns.keys():
             x1, y1, x2, y2 = self.btns[btn]
             if x1 <= x <= x1 + x2 and y1 <= y <= y1 + y2:
                 return btn  # Если да, то возвращаем кнопку
 
+    # Функция подсветки кнопок
     def backlight(self, btn):
         for elem in self.colors.keys():
             self.colors[elem] = self.textColor
