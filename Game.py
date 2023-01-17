@@ -1,14 +1,15 @@
 import pygame
-from map import build_map
-from Functions import load_image, getEquipment
-from Enemy import Enemy, TILE_SIZE
+from map import build_map, get_waves
+from Utils import load_image, TILE_SIZE, getInventory
+from Enemy import Enemy
 from ShootingTower import ShootingTower, TOWERS_INFO
 from FarmTower import FarmTower
 
 
 class Game:
-    def __init__(self, screen, level_filename):
+    def __init__(self, screen, level_filename, waves):
         self.screen = screen
+        self.waves = get_waves(waves)
         self.land = pygame.sprite.Group()
         self.shooting_towers = pygame.sprite.Group()
         self.farm_towers = pygame.sprite.Group()
@@ -16,9 +17,9 @@ class Game:
         self.enemies = pygame.sprite.Group()
         self.map = build_map(level_filename, self.land)
 
-        self.equipment = getEquipment()
+        self.inventory = getInventory()
         self.hp = 3
-        self.coins = 500
+        self.coins = 1000
         self.wave = 1
         self.is_sending_wave = False
         self.sending_enemy_index = 0
@@ -28,6 +29,7 @@ class Game:
         self.selected_tower = -1
 
     def draw_hp(self):
+        '''Функция рисующая сердечки'''
         for i in range(self.hp):
             image = load_image('./decor/other/heart.png')
             image = pygame.transform.scale(image, (32, 32))
@@ -77,16 +79,16 @@ class Game:
         surface.blit(shape_surf, rect)
 
     def draw_inventory(self):
-        pygame.draw.rect(self.screen, (0, 0, 0), (-5, 740, 10 + len(self.equipment) * 100 + 15, 165), 5)
+        pygame.draw.rect(self.screen, (0, 0, 0), (-5, 740, 10 + len(self.inventory) * 100 + 15, 165), 5)
 
         if self.is_tower_selected:
             self.draw_rect_alpha(self.screen, (0, 0, 0, 90), (10 + (self.selected_tower - 1) * 100, 750, 100, 140))
 
-        for i in range(len(self.equipment)):
-            image = load_image('./defense/' + TOWERS_INFO[self.equipment[i]]['image_filename'])
+        for i in range(len(self.inventory)):
+            image = load_image('./defense/' + TOWERS_INFO[self.inventory[i]]['levels'][0]['image_filename'])
             rect = image.get_rect()
             image = pygame.transform.scale(image, (rect.width / rect.height * 64, 64))
-            text = pygame.font.Font(None, 30).render(self.equipment[i], 1, (0, 0, 0))
+            text = pygame.font.Font(None, 30).render(self.inventory[i], 1, (0, 0, 0))
 
             self.screen.blit(image, (10 + i * 100 + 50 - rect.width / rect.height * 64 // 2, 760))
             self.screen.blit(text, (10 + i * 100 + 50 - text.get_width() // 2, 840))
@@ -94,20 +96,12 @@ class Game:
             image = load_image('./decor/other/money.png')
             image = pygame.transform.scale(image, (16, 16))
 
-            text = pygame.font.Font(None, 30).render(str(TOWERS_INFO[self.equipment[i]]['price']), 1, (0, 0, 0))
+            text = pygame.font.Font(None, 30).render(str(TOWERS_INFO[self.inventory[i]]['price']), 1, (0, 0, 0))
             self.screen.blit(image, (10 + i * 100 + 50 - (16 + 5 + text.get_width()) // 2, 865))
             self.screen.blit(text, (10 + i * 100 + 50 - text.get_width() // 2 + 10, 865))
 
     def add_money(self, value):
         self.coins += value
-
-        # if step == 0:
-        #     self.coins += value
-        #
-        # image = load_image('./decor/other/green_money.png')
-        # print((step / 300) * 256)
-        # image.set_alpha((step / 300) * 256)
-        # self.screen.blit(image, (1500, 200))
 
     def lose_heart(self):
         self.hp -= 1
@@ -123,7 +117,8 @@ class Game:
     def inventory_detect_mouse(self, pos):
         buttons = [[20, 95], [120, 195], [220, 295], [320, 395]]
 
-        for i in range(len(self.equipment)):
+        print(self.inventory)
+        for i in range(len(self.inventory)):
             if buttons[i][0] <= pos[0] <= buttons[i][1] and 780 <= pos[1] <= 894:
                 return i + 1
 
@@ -131,8 +126,13 @@ class Game:
 
     def tower_detect_mouse(self, pos):
         for shooting_tower in self.shooting_towers.sprites():
-            if shooting_tower.rect.x <= pos[0] <= shooting_tower.rect.x + shooting_tower.rect.width and \
-                    shooting_tower.rect.y <= pos[1] <= shooting_tower.rect.y + shooting_tower.rect.height:
+            if shooting_tower.rect.x <= pos[0] <= shooting_tower.rect.x + shooting_tower.rect.width + 26 and \
+                    shooting_tower.rect.y - 32 <= pos[1] <= shooting_tower.rect.y + shooting_tower.rect.height + 26:
+                return shooting_tower
+
+        for shooting_tower in self.farm_towers.sprites():
+            if shooting_tower.rect.x <= pos[0] <= shooting_tower.rect.x + shooting_tower.rect.width + 26 and \
+                    shooting_tower.rect.y - 32 <= pos[1] <= shooting_tower.rect.y + shooting_tower.rect.height + 26:
                 return shooting_tower
 
         return 0
@@ -143,10 +143,76 @@ class Game:
         for place in places:
             if place[0] * TILE_SIZE <= pos[0] <= (place[0] + 1) * TILE_SIZE and \
                     place[1] * TILE_SIZE <= pos[1] <= (place[1] + 1) * TILE_SIZE:
-                if TOWERS_INFO[self.equipment[self.selected_tower - 1]]['place_type'] == place[2]:
+                if TOWERS_INFO[self.inventory[self.selected_tower - 1]]['place_type'] == place[2]:
                     return place
 
         return 0
+
+    def buttons_detect_mouse(self, towers, pos):
+        for tower in towers:
+            coords = tower.coords()
+
+            if tower.coords()[1] >= TILE_SIZE:
+                if coords[0] <= pos[0] <= coords[0] + 0.77 * 26 and \
+                        coords[1] - 26 <= pos[1] <= coords[1]:
+                    tower.delete()
+                    self.coins += tower.price()
+                elif coords[0] + 30 <= pos[0] <= coords[0] + 0.77 * 26 + 30 and \
+                        coords[1] - 26 <= pos[1] <= coords[1]:
+                    if tower.is_updateable():
+                        self.coins -= tower.update_level()
+            else:
+                if coords[0] <= pos[0] <= coords[0] + 0.77 * 26 and \
+                        coords[1] + tower.size()[1] <= pos[1] <= coords[1] + tower.size()[1] + 26:
+                    tower.delete()
+                    self.coins += tower.price()
+                elif coords[0] + 30 <= pos[0] <= coords[0] + 0.77 * 26 + 30 and \
+                        coords[1] + tower.size()[1] <= pos[1] <= coords[1] + tower.size()[1] + 26:
+                    if tower.is_updateable():
+                        self.coins -= tower.update_level()
+
+    def tower_buttons_detect_mouse(self, pos):
+        self.buttons_detect_mouse(self.shooting_towers.sprites(), pos)
+        self.buttons_detect_mouse(self.farm_towers.sprites(), pos)
+
+    def update_tower(self, tower):
+        self.coins -= tower.update_level()
+
+    def draw_tower_buttons(self, tower):
+        if tower.coords()[1] >= TILE_SIZE:
+            image = load_image('./decor/buttons/Delete.png')
+            image = pygame.transform.scale(image, (0.77 * 26, 26))
+
+            self.screen.blit(image, (tower.coords()[0], tower.coords()[1] - 30))
+
+            image = load_image('./decor/buttons/Update.png')
+            image = pygame.transform.scale(image, (26, 26))
+
+            self.screen.blit(image, (tower.coords()[0] + 30, tower.coords()[1] - 30))
+
+            image = load_image('./decor/other/money.png')
+            image = pygame.transform.scale(image, (16, 16))
+
+            text = pygame.font.Font(None, 30).render(str(tower.price()), 1, (0, 0, 0))
+            self.screen.blit(image, (tower.coords()[0] + 60, tower.coords()[1] - 25))
+            self.screen.blit(text, (tower.coords()[0] + 75, tower.coords()[1] - 25))
+        else:
+            image = load_image('./decor/buttons/Delete.png')
+            image = pygame.transform.scale(image, (0.77 * 26, 26))
+
+            self.screen.blit(image, (tower.coords()[0], tower.coords()[1] + tower.size()[1]))
+
+            image = load_image('./decor/buttons/Update.png')
+            image = pygame.transform.scale(image, (26, 26))
+
+            self.screen.blit(image, (tower.coords()[0] + 30, tower.coords()[1] + tower.size()[1]))
+
+            image = load_image('./decor/other/money.png')
+            image = pygame.transform.scale(image, (16, 16))
+
+            text = pygame.font.Font(None, 30).render(str(tower.price()), 1, (0, 0, 0))
+            self.screen.blit(image, (tower.coords()[0] + 60, tower.coords()[1] + tower.size()[1] + 5))
+            self.screen.blit(text, (tower.coords()[0] + 75, tower.coords()[1] + tower.size()[1] + 5))
 
     def draw(self):
         # ДЛЯ ТЕСТИРОВНИЯ
@@ -159,7 +225,7 @@ class Game:
         FarmTower(self.farm_towers, 0, 0, self.add_money)
 
         running = True
-        GAMESTART = pygame.USEREVENT + 1
+        GAMESTART = pygame.USEREVENT + 130
         NEWWAVE = pygame.USEREVENT + 2
         ADDENEMY = pygame.USEREVENT + 3
         pygame.time.set_timer(GAMESTART, 1000)
@@ -185,18 +251,16 @@ class Game:
                         pygame.time.set_timer(GAMESTART, 0)
 
                         self.is_sending_wave = True
-                        pygame.time.set_timer(NEWWAVE, self.map['waves'][self.wave - 1]['timeout'])
+                        pygame.time.set_timer(NEWWAVE, 5000)
                 elif event.type == NEWWAVE and self.hp > 0:
                     self.is_sending_wave = True
                     self.sending_enemy_index = 0
 
-                    if self.wave != len(self.map['waves']):
+                    if self.wave != len(self.waves):
                         self.wave += 1
-                        self.add_money(self.map['waves'][self.wave - 1]['bonus_coins'])
+                        self.add_money(500)
                         for farm in self.farm_towers:
                             farm.give_money()
-
-                        pygame.time.set_timer(NEWWAVE, self.map['waves'][self.wave - 1]['timeout'])
                     else:
                         self.game_start_state = 'win'
                         print('WIN!!!')
@@ -205,8 +269,8 @@ class Game:
                     self.shooting_towers.update()
 
                     if self.game_start_state == 'started' and self.is_sending_wave:
-                        if self.sending_enemy_index < len(self.map['waves'][self.wave - 1]['enemies']):
-                            Enemy(self.enemies, self.map['waves'][self.wave - 1]['enemies'][self.sending_enemy_index],
+                        if self.sending_enemy_index < len(self.waves[self.wave - 1]):
+                            Enemy(self.enemies, self.waves[self.wave - 1][self.sending_enemy_index],
                                   self.map['w'], self.map['h'],
                                   self.map['enemy_path'], self.lose_heart)
                             self.sending_enemy_index += 1
@@ -218,24 +282,18 @@ class Game:
                             place = self.tower_place_detect_mouse(pygame.mouse.get_pos())
                             self.is_tower_selected = False
                             if place:
-                                self.put_tower(self.equipment[self.selected_tower - 1],
+                                self.put_tower(self.inventory[self.selected_tower - 1],
                                                place[0], place[1])
+                                self.selected_tower = None
 
                         tower = self.inventory_detect_mouse(event.pos)
                         if self.inventory_detect_mouse(event.pos) and self.selected_tower != tower:
-                            if TOWERS_INFO[self.equipment[tower - 1]]['price'] <= self.coins:
+                            if TOWERS_INFO[self.inventory[tower - 1]]['price'] <= self.coins:
                                 self.is_tower_selected = True
                                 self.selected_tower = tower
                         else:
                             self.is_tower_selected = False
-
-                            hover_tower = self.tower_detect_mouse(pos)
-                            if hover_tower:
-                                self.draw_rect_alpha(self.screen, (0, 0, 0, 50), (hover_tower.rect.x,
-                                                                                  hover_tower.rect.y,
-                                                                                  hover_tower.rect.width,
-                                                                                  hover_tower.rect.height))
-                                hover_tower.kill()
+                            self.tower_buttons_detect_mouse(pos)
 
             self.screen.fill((255, 255, 255))
 
@@ -246,7 +304,6 @@ class Game:
             self.missiles.draw(self.screen)
             self.shooting_towers.draw(self.screen)
             self.farm_towers.draw(self.screen)
-            self.tanks.draw(self.screen)
             self.draw_header()
             self.draw_waves()
 
@@ -264,8 +321,7 @@ class Game:
 
             hover_tower = self.tower_detect_mouse(pos)
             if hover_tower:
-                self.draw_rect_alpha(self.screen, (0, 0, 0, 50), (hover_tower.rect.x, hover_tower.rect.y,
-                                                                  hover_tower.rect.width, hover_tower.rect.height))
+                self.draw_tower_buttons(hover_tower)
 
             self.draw_inventory()
 
@@ -273,7 +329,6 @@ class Game:
                 self.enemies.update()
                 self.shooting_towers.update()
                 self.missiles.update()
-                self.tanks.update()
             else:
                 print('GAME OVER!!!')
 
@@ -288,7 +343,7 @@ if __name__ == '__main__':
     fps = 90
     clock = pygame.time.Clock()
 
-    game = Game(screen, 'test.csv')
+    game = Game(screen, 'test.csv', 15)
     game.draw()
 
     pygame.quit()

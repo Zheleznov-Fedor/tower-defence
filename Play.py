@@ -1,6 +1,6 @@
 # Всё, что нам нужно:
 import pygame
-from Functions import load_image, black
+from Utils import load_image, black
 
 
 class Play:

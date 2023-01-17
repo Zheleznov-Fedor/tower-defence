@@ -1,6 +1,6 @@
 import pygame
 import csv
-from Functions import load_image, TILE_SIZE
+from Utils import load_image, TILE_SIZE
 from Enemy import Enemy
 from ShootingTower import ShootingTower
 
@@ -61,7 +61,6 @@ def load_map(filname):
             'land': [],
             'decor': [],
             'enemy_path': [],
-            'waves': [],
             'tower_places': []
         }
         r = list(reader)
@@ -86,13 +85,6 @@ def load_map(filname):
 
         res['enemy_path'] = [list(map(int, point.split(','))) for point in r[h + decor_count + 2]]
 
-        for wave in r[h + decor_count + 4:]:
-            res['waves'].append({
-                'enemies': wave[0].split(','),
-                'timeout': int(wave[1]),
-                'bonus_coins': int(wave[2])
-            })
-
         return res
 
 
@@ -110,6 +102,12 @@ def build_map(filename, sprite_group):
 
     return map
 
+
+def get_waves(waves):
+    f = open('txt/waves.txt')
+    lines = f.readlines()
+    f.close()
+    return list(map(str.strip, lines))[:waves]
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, group, code, x, y):

@@ -1,5 +1,5 @@
 import pygame
-from Functions import black
+from Utils import black
 
 
 class Menu:

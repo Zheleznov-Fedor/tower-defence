@@ -1,18 +1,18 @@
 import pygame
-from Functions import load_image, TILE_SIZE
+from Utils import load_image, TILE_SIZE, ENEMIES_INFO
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, group, type, map_w, map_h, path, game_lose_heart):
+    def __init__(self, group, lvl, map_w, map_h, path, game_lose_heart):
         super().__init__(group)
         self.game_lose_heart = game_lose_heart
 
-        self.orig_image = load_image('./enemy/' + type)
-        self.image = load_image('./enemy/' + type)
-        height = 50
-        self.image = pygame.transform.scale(self.image, (48 * height / 56, height))
-        self.orig_image = pygame.transform.scale(self.orig_image, (48 * height / 56, height))
+        self.orig_image = load_image('./enemy/' + ENEMIES_INFO[lvl]['image_filename'])
+        self.image = load_image('./enemy/' + ENEMIES_INFO[lvl]['image_filename'])
+        height = ENEMIES_INFO[lvl]['height']
         self.rect = self.image.get_rect()
+        self.image = pygame.transform.scale(self.image, (height * self.rect.width / self.rect.height, height))
+        self.orig_image = pygame.transform.scale(self.orig_image, (height * self.rect.width / self.rect.height, height))
 
         self.start = (path[0][0] * 100, (1 + path[0][1]) * 100 - 50 * 0.5)
         self.map_w = map_w
@@ -22,10 +22,9 @@ class Enemy(pygame.sprite.Sprite):
         else:
             self.rect.x = -60
         self.rect.y = self.start[1]
-        self.rect.w = 30
-        self.rect.width = 30
 
-        self.step = 2
+        self.step = ENEMIES_INFO[lvl]['step']
+        self.rot_speed = ENEMIES_INFO[lvl]['angle_step']
 
         self.path = path
         self.path_pos = 1
@@ -35,7 +34,8 @@ class Enemy(pygame.sprite.Sprite):
         self.rotating_direction = 0
         self.rotating_pos = 0
 
-        self.hp = 100
+        self.hp = ENEMIES_INFO[lvl]['hp']
+        self.max_hp = ENEMIES_INFO[lvl]['hp']
 
         if self.path[self.path_pos][0] < self.grid_pos[0]:
             self.image = pygame.transform.rotate(self.orig_image, -180)
@@ -80,7 +80,7 @@ class Enemy(pygame.sprite.Sprite):
             if self.is_rotating:
                 self.rect.x, self.rect.y = self.bezier(*self.path[self.path_pos:self.path_pos + 3],
                                                        round(self.rotating_pos / 90, 3))
-                self.rotating_pos = round(self.rotating_pos + 0.4, 3)
+                self.rotating_pos = round(self.rotating_pos + self.rot_speed, 3)
                 self.rot_center(-self.rotating_pos * self.rotating_direction)
                 if self.rotating_pos == 90:
                     self.orig_image = pygame.transform.rotate(self.orig_image, -90 * self.rotating_direction)
@@ -142,7 +142,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def draw(self, screen):
         pygame.draw.rect(screen, (255, 0, 0), (self.rect.x - 5, self.rect.y - 20, 60, 10))
-        pygame.draw.rect(screen, (0, 255, 0), (self.rect.x - 5, self.rect.y - 20, self.hp * 0.6, 10))
+        pygame.draw.rect(screen, (0, 255, 0), (self.rect.x - 5, self.rect.y - 20, 60 / self.max_hp * self.hp, 10))
         pygame.draw.rect(screen, (0, 0, 0), (self.rect.x - 5, self.rect.y - 20, 60, 10), 2)
 
     def damage(self, value):

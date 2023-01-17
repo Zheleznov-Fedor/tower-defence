@@ -1,6 +1,6 @@
 # Всё, что нам нужно:
 import pygame
-from Functions import load_image, getEquipment, black, allEquipment, getInventory
+from Utils import load_image, black, allEquipment, getEquipment, getInventory
 
 
 class Equipment:
