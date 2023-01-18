@@ -4,7 +4,7 @@ import pygame
 
 black = (30, 30, 30)
 allEquipment = {'Solider': '0', 'Gun': '500', 'Farm': '1000',
-                'Plane': '1500', 'RocketLauncher': '2000', 'Laser': '2500'}
+                'RocketLauncher': '2000', 'Laser': '2500'}
 ENEMIES_INFO = {
     '0':
         {
@@ -13,6 +13,7 @@ ENEMIES_INFO = {
             'height': 50,
             'step': 1,
             'angle_step': 0.4,
+            'needs_rotate': True
         },
     '1':
         {
@@ -21,6 +22,7 @@ ENEMIES_INFO = {
             'height': 50,
             'step': 1,
             'angle_step': 0.4,
+            'needs_rotate': True
         },
     '2':
         {
@@ -29,6 +31,7 @@ ENEMIES_INFO = {
             'height': 50,
             'step': 1,
             'angle_step': 0.3,
+            'needs_rotate': True
         },
     '3':
         {
@@ -37,15 +40,8 @@ ENEMIES_INFO = {
             'height': 50,
             'step': 1,
             'angle_step': 0.3,
+            'needs_rotate': True
         },
-    '4':
-        {
-            'hp': 2000,
-            'image_filename': 'lvl4png',
-            'height': 50,
-            'step': 1,
-            'angle_step': 0.1,
-        }
 }
 TOWERS_INFO = {  # Настройки каждой башни
     'Solider':  # У Мити опечатка, правильно Soldier
@@ -55,8 +51,6 @@ TOWERS_INFO = {  # Настройки каждой башни
             'x_offset': 0,  # Сдвиг по горизонтали, для правильного размещения
             'y_offset': 0,  # Сдвиг по вертикали, для правильного размещения
             'max_size_in_match': 80,  # Максимальный размер картинки башни в матче
-            'x_center_offset': 0,
-            'y_center_offset': 0,
             'levels': [
                 {
                     'image_filename': 'Solider2.png',  # Название файла картинки башни
@@ -82,8 +76,6 @@ TOWERS_INFO = {  # Настройки каждой башни
             'x_offset': 18,
             'y_offset': -5,
             'max_size_in_match': 80,
-            'x_center_offset': 0,
-            'y_center_offset': 0,
             'levels': [
                 {
                     'image_filename': 'Gun2.png',  # Название файла картинки башни
@@ -102,41 +94,12 @@ TOWERS_INFO = {  # Настройки каждой башни
                 }
             ]
         },
-    'Plane':
-        {
-            'price': 400,
-            'place_type': 'default',
-            'x_offset': 0,
-            'y_offset': 0,
-            'max_size_in_match': 80,
-            'x_center_offset': 0,
-            'y_center_offset': 0,
-            'levels': [
-                {
-                    'image_filename': 'Plane2.png',  # Название файла картинки башни
-                    'visible_radius': 250,  # Радиус на котором башня видит противников
-                    'shoot_delay': 400,  # Время перезарядки
-                    'shoot_damage': 15,  # Урон выстрела
-                    'missile_type': 'Bullet',  # Тип боеприпаса
-                    'update_price': 200  # Цена обновления на новый уровень
-                },
-                {
-                    'image_filename': 'Gun2.png',
-                    'visible_radius': 250,
-                    'shoot_delay': 400,
-                    'shoot_damage': 15,
-                    'missile_type': 'Rocket1'
-                }
-            ]
-        },
     'Laser':
         {
             'price': 500,
             'place_type': 'default',
             'x_offset': 0,
             'y_offset': 0,
-            'x_center_offset': 0,
-            'y_center_offset': 0,
             'max_size_in_match': 80,
             'levels': [
                 {
@@ -175,6 +138,33 @@ TOWERS_INFO = {  # Настройки каждой башни
                 }
             ]
         },
+    'RocketLauncher':
+        {
+            'price': 400,
+            'place_type': 'default',
+            'x_offset': 0,
+            'y_offset': 0,
+            'max_size_in_match': 80,
+            'x_center_offset': 0,
+            'y_center_offset': 0,
+            'levels': [
+                {
+                    'image_filename': 'RocketLauncher2.png',  # Название файла картинки башни
+                    'visible_radius': 250,  # Радиус на котором башня видит противников
+                    'shoot_delay': 400,  # Время перезарядки
+                    'shoot_damage': 100,  # Урон выстрела
+                    'missile_type': 'Rocket2',  # Тип боеприпаса
+                    'update_price': 200  # Цена обновления на новый уровень
+                },
+                {
+                    'image_filename': 'RocketLauncher22.png',
+                    'visible_radius': 250,
+                    'shoot_delay': 1500,
+                    'shoot_damage': 150,
+                    'missile_type': 'Rocket2'
+                }
+            ]
+        }
 }
 MISSILES_INFO = {
     'Rocket1': {
@@ -184,10 +174,10 @@ MISSILES_INFO = {
         'step': 3  # Скорость боеприпаса
     },
     'Rocket2': {
-        'image_filename': 'Rocket2.png',  # Название файла картинки боеприпаса
-        'width_in_match': 20,  # Ширина картинки боеприпаса в матче
-        'is_need_rotate': True,  # Нужен ли поворот при перемещении к цели
-        'step': 7  # Скорость боеприпаса
+        'image_filename': 'Rocket2.png',
+        'width_in_match': 20,
+        'is_need_rotate': True,
+        'step': 7
     },
     'Bullet': {
         'image_filename': 'Bullet.png',

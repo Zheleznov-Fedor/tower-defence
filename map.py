@@ -1,11 +1,10 @@
 import pygame
 import csv
 from Utils import load_image, TILE_SIZE
-from Enemy import Enemy
-from ShootingTower import ShootingTower
 
 
 def parse_tile(code):
+    """Преобразует код тайла в путь к картинке"""
     types = {
         'R': '/road',
         'D': '/decor',
@@ -49,6 +48,7 @@ def parse_tile(code):
 
 
 def load_map(filname):
+    """Загружает файл карты и строит словарь карты"""
     with open(filname, encoding="utf8") as file:
         reader = csv.reader(file, delimiter=';', quotechar='"')
         tower_places_types = {
@@ -89,6 +89,7 @@ def load_map(filname):
 
 
 def build_map(filename, sprite_group):
+    """Рисует карту"""
     map = load_map(filename)
     land = map['land']
     decor = map['decor']
@@ -104,12 +105,15 @@ def build_map(filename, sprite_group):
 
 
 def get_waves(waves):
+    """Берёт волны из файла и возвращает первые waves штук"""
     f = open('txt/waves.txt')
     lines = f.readlines()
     f.close()
     return list(map(str.strip, lines))[:waves]
 
+
 class Tile(pygame.sprite.Sprite):
+    """Класс тайла карты"""
     def __init__(self, group, code, x, y):
         super().__init__(group)
         self.image = load_image('.' + parse_tile(code))
@@ -118,50 +122,3 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = size * x
         self.rect.y = size * y
-
-
-if __name__ == '__main__':
-    pygame.init()
-    screen = pygame.display.set_mode((1600, 900))
-    pygame.display.set_caption('Map test')
-
-    running = True
-    fps = 90
-    state = 'waiting'
-    clock = pygame.time.Clock()
-    land = pygame.sprite.Group()
-    towers = pygame.sprite.Group()
-    enemies = pygame.sprite.Group()
-
-    map = build_map('test.csv', land)
-    last = 0
-    # Board(all_sprites, 1, 2)
-    x = ShootingTower(towers, 'Gun.png', 1, 2, enemies)
-
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-        screen.fill((255, 255, 255))
-
-        if last + 1500 <= pygame.time.get_ticks():
-            last = pygame.time.get_ticks()
-            Enemy(enemies, '0.png', map['w'], map['h'], map['enemy_path'])
-
-        enemies.update()
-        towers.update()
-        land.draw(screen)
-        enemies.draw(screen)
-        towers.draw(screen)
-
-        x.update()
-
-        last += 1
-        for enemy in enemies:
-            enemy.draw(screen)
-
-        clock.tick(fps)
-        pygame.display.flip()
-
-    pygame.quit()

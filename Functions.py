@@ -28,7 +28,6 @@ def drawCrediti(screen, size):
 def drawMenu(menu):
     menu.draw("Играть", 1)
     menu.draw("Снаряжение", 2)
-    menu.draw("Настройки", 3)
 
 
 def drawPlay(play, screenColor):
@@ -48,13 +47,13 @@ def drawPlay(play, screenColor):
                     if click == 'Назад':
                         return
                     elif click == 'Лёгкий':
-                        game = Game(play.screen, 'test.csv', 15)
+                        game = Game(play.screen, 'txt/test.csv', 1)
                         game.draw()
                     elif click == 'Средний':
-                        game = Game(play.screen, 'test.csv', 20)
+                        game = Game(play.screen, 'txt/test.csv', 20)
                         game.draw()
                     elif click == 'Сложный':
-                        game = Game(play.screen, 'test.csv', 25)
+                        game = Game(play.screen, 'txt/test.csv', 25)
                         game.draw()
             if event.type == pygame.MOUSEMOTION:
                 click = play.btnClick(event.pos)
@@ -140,38 +139,3 @@ def drawEquipment(equipment, screenColor):
         clock.tick(fps)
         pygame.display.flip()
     return
-
-"""
-def drawEnd(result, wave, screen, screenSize):
-    width, height = screenSize
-    if wave <= 15:
-        income = wave * 5
-    elif 15 < wave <= 20:
-        income = 75 + (wave - 15) * 10
-    elif wave > 20:
-        income = 125 + (wave - 20) * 15
-    if result == 'win':
-        text = 'Вы выиграли!'
-        income += 100
-        color = (40, 114, 51)
-    elif result == 'lose':
-        text = 'Вы проиграли!'
-        color = (255, 36, 0)
-    font150 = pygame.font.Font(None, 150)
-    font100 = pygame.font.Font(None, 100)
-    inscription = font150.render(text, True, color)
-    total = font100.render(f"Итого волн: {str(wave)}", True, color)
-    incomeText = font100.render(f"Получено: +{str(income)}", True, color)
-    x, y = (width // 2 - inscription.get_width() // 2, height // 2 - inscription.get_height() // 2)
-    pygame.draw.rect(screen, (255, 245, 238), (x - 20, y - 20, inscription.get_width() + 40,
-                                               inscription.get_height() + incomeText.get_height() + total.get_height()
-                                               + 40), 0)
-    pygame.draw.rect(screen, color, (x - 20, y - 20, inscription.get_width() + 40,
-                                     inscription.get_height() + incomeText.get_height() + total.get_height() + 40), 2)
-    pygame.draw.rect(screen, color, (x - 20, y - 20, inscription.get_width() + 40, inscription.get_height() + 30), 2)
-    screen.blit(inscription, (x, y))
-    screen.blit(total, (x, height // 2 - incomeText.get_height() // 2 + inscription.get_height()))
-    screen.blit(incomeText,
-                (x, height // 2 - incomeText.get_height() // 2 + inscription.get_height() + total.get_height()))
-    addCrediti(income)
-"""
