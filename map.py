@@ -99,7 +99,7 @@ def build_map(filename, sprite_group):
             Tile(sprite_group, land[y][x], x, y)
 
     for elem in decor:
-        Tile(sprite_group, elem['code'], elem['x'], elem['y'])
+        Tile(sprite_group, elem['code'], elem['x'], elem['y'], 'decor')
 
     return map
 
@@ -114,11 +114,18 @@ def get_waves(waves):
 
 class Tile(pygame.sprite.Sprite):
     """Класс тайла карты"""
-    def __init__(self, group, code, x, y):
+    def __init__(self, group, code, x, y, type='land'):
         super().__init__(group)
         self.image = load_image('.' + parse_tile(code))
-        size = TILE_SIZE
-        self.image = pygame.transform.scale(self.image, (size, size))
+
         self.rect = self.image.get_rect()
-        self.rect.x = size * x
-        self.rect.y = size * y
+        if type == 'land':
+            size = TILE_SIZE
+            self.image = pygame.transform.scale(self.image, (size, size))
+            self.rect.x = size * x
+            self.rect.y = size * y
+        elif type == 'decor':
+            size = (self.rect.width * 100 / 128, self.rect.height * 100 / 128)
+            self.image = pygame.transform.scale(self.image, (self.rect.width * 100 / 128, self.rect.height * 100 / 128))
+            self.rect.x = size[0] * x
+            self.rect.y = size[1] * y

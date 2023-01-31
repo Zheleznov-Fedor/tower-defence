@@ -1,7 +1,6 @@
 import pygame
 from Utils import load_image, TILE_SIZE, ENEMIES_INFO
 
-
 class Enemy(pygame.sprite.Sprite):
     """Класс Пришельца"""
     def __init__(self, group, lvl, map_w, map_h, path, game_lose_heart, add_money):
@@ -21,8 +20,10 @@ class Enemy(pygame.sprite.Sprite):
         self.map_h = map_h  # Длина карты в тайлах
         if path[0][0] == map_w - 1:
             self.rect.x = map_w * TILE_SIZE
-        else:
+        elif path[0][0] == 0:
             self.rect.x = -60
+        else:
+            self.rect.x = self.start[0]
         self.rect.y = self.start[1]
 
         self.step = ENEMIES_INFO[lvl]['step']  # Шаг за один update при движении по прямой
@@ -39,13 +40,16 @@ class Enemy(pygame.sprite.Sprite):
         self.rotating_direction = 0  # Направление поворота (-1 - лево, 1 - право)
         self.rotating_pos = 0  # Позиция в повороте
 
-        # Поворот картинки для правильного выхода из за края карты
+        # Поворот картинки для правильного выхода из-за края карты
         if self.path[self.path_pos][0] < self.grid_pos[0]:
             self.image = pygame.transform.rotate(self.orig_image, -180)
+            self.orig_image = pygame.transform.rotate(self.orig_image, -180)
         elif self.path[self.path_pos][1] > self.grid_pos[1]:
-            self.image = pygame.transform.rotate(self.orig_image, 90)
-        elif self.path[self.path_pos][1] != self.grid_pos[1]:
             self.image = pygame.transform.rotate(self.orig_image, -90)
+            self.orig_image = pygame.transform.rotate(self.orig_image, -90)
+        elif self.path[self.path_pos][1] != self.grid_pos[1]:
+            self.image = pygame.transform.rotate(self.orig_image, 90)
+            self.orig_image = pygame.transform.rotate(self.orig_image, 90)
 
     def bezier(self, p0, p1, p2, t):
         """Определяет координаты положения на кривой, образованной по трём точкам, в момент времени t"""

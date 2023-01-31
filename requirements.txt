@@ -1,0 +1,4 @@
+pygame==2.1.2
+csv==1.0
+os
+sys

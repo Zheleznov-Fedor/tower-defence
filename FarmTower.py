@@ -38,7 +38,7 @@ class FarmTower(pygame.sprite.Sprite):
 
     def update_price(self):
         """Возвращает цену обновления"""
-        return TOWERS_INFO['Farm']['levels'][self.level - 1].get('update_price', 0)
+        return TOWERS_INFO['Farm']['levels'][self.level].get('update_price', 0)
 
     def delete(self):
         """Удалить башню"""

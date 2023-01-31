@@ -61,7 +61,7 @@ class ShootingTower(pygame.sprite.Sprite):
 
     def update_price(self):
         """Возвращает цену обновления"""
-        return TOWERS_INFO[self.tower_name]['levels'][self.level - 1].get('update_price', 0)
+        return TOWERS_INFO[self.tower_name]['levels'][self.level].get('update_price', 0)
 
     def update_level(self):
         """Обновляет уровень и сопутсвующие харрактеристики"""

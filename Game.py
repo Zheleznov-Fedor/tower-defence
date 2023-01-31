@@ -181,6 +181,7 @@ class Game:
                         coords[1] - 26 <= pos[1] <= coords[1]:
                     if tower.is_updateable() and self.coins >= tower.update_price():
                         tower.update_level()
+                        print(tower.update_price())
                         self.coins -= tower.update_price()
             else:
                 if coords[0] <= pos[0] <= coords[0] + 0.77 * 26 and \
@@ -191,6 +192,7 @@ class Game:
                         coords[1] + tower.size()[1] <= pos[1] <= coords[1] + tower.size()[1] + 26:
                     if tower.is_updateable() and self.coins >= tower.update_price():
                         tower.update_level()
+                        print(tower.update_price())
                         self.coins -= tower.update_price()
 
     def tower_buttons_detect_mouse(self, pos):
@@ -223,7 +225,7 @@ class Game:
                 image = pygame.transform.scale(image, (16, 16))
                 self.screen.blit(image, (tower.coords()[0] + 60, tower.coords()[1] - 25))
 
-                text = pygame.font.Font(None, 30).render(str(tower.price()), 1, (0, 0, 0))
+                text = pygame.font.Font(None, 30).render(str(tower.update_price()), 1, (0, 0, 0))
                 self.screen.blit(text, (tower.coords()[0] + 75, tower.coords()[1] - 25))
             else:
                 text = pygame.font.Font(None, 30).render('No update', 1, (0, 0, 0))
@@ -252,7 +254,7 @@ class Game:
                 image = pygame.transform.scale(image, (16, 16))
                 self.screen.blit(image, (tower.coords()[0] + 60, tower.coords()[1] + tower.size()[1] + 5))
 
-                text = pygame.font.Font(None, 30).render(str(tower.price()), 1, (0, 0, 0))
+                text = pygame.font.Font(None, 30).render(str(tower.update_price()), 1, (0, 0, 0))
                 self.screen.blit(text, (tower.coords()[0] + 75, tower.coords()[1] + tower.size()[1] + 5))
             else:
                 text = pygame.font.Font(None, 30).render('No update', 1, (0, 0, 0))
@@ -312,21 +314,13 @@ class Game:
             return 'ok'
 
     def draw(self):
-        # ДЛЯ ТЕСТИРОВНИЯ
-        # ShootingTower(self.shooting_towers, 'Gun', 2, 4, self.enemies, self.missiles)
-        # ShootingTower(self.shooting_towers, 'Solider', 5, 3, self.enemies, self.missiles)
-        # ShootingTower(self.shooting_towers, 'Laser', 6, 5, self.enemies, self.missiles)
-        # ShootingTower(self.shooting_towers, 'Solider', 5, 6, self.enemies, self.missiles)
-        # ShootingTower(self.shooting_towers, 'Laser', 9, 3, self.enemies, self.missiles)
-
-        # FarmTower(self.farm_towers, 0, 0, self.add_money)
-
         running = True
         GAMESTART = pygame.USEREVENT + 130
         NEWWAVE = pygame.USEREVENT + 2
         ADDENEMY = pygame.USEREVENT + 3
         pygame.time.set_timer(GAMESTART, 1000)
         pygame.time.set_timer(ADDENEMY, 750)
+        self.game_start_state = 'starting'
 
         while running:
             for event in pygame.event.get():
@@ -436,7 +430,6 @@ class Game:
                 self.wave_state = 'waiting'
 
             if self.game_start_state == 'win':
-                print(342)
                 self.end('win', (1600, 900))
 
             if self.hp > 0:
@@ -456,7 +449,7 @@ if __name__ == '__main__':
     fps = 90
     clock = pygame.time.Clock()
 
-    game = Game(screen, 'test.csv', 15)
+    game = Game(screen, 'txt/test1.csv', 15)
     game.draw()
 
     pygame.quit()

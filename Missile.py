@@ -17,17 +17,16 @@ class Missile(pygame.sprite.Sprite):
         self.orig_image = pygame.transform.scale(self.orig_image, (size, self.rect.height / self.rect.width * size))
 
         self.rect.x, self.rect.y = tower.rect.center
-        self.center = self.rect.center
 
         self.is_need_rotate = MISSILES_INFO[missile_name]['is_need_rotate']
         self.step = MISSILES_INFO[missile_name]['step']
 
     def rotate_to_point(self, x, y):
         """Поворачивает боеприпас к цели"""
-        direction = pygame.math.Vector2(x, y) - self.center
+        direction = pygame.math.Vector2(x, y) - self.rect.center
         angle = direction.angle_to((0, -1))
         self.image = pygame.transform.rotate(self.orig_image, angle)
-        self.rect = self.image.get_rect(center=self.center)
+        self.rect = self.image.get_rect(center=self.rect.center)
 
     def update(self, *args):
         if self.enemy.alive():  # если цель ещё жива

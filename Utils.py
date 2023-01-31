@@ -181,9 +181,9 @@ MISSILES_INFO = {
     },
     'Bullet': {
         'image_filename': 'Bullet.png',
-        'width_in_match': 40,
+        'width_in_match': 10,
         'is_need_rotate': False,
-        'step': 15
+        'step': 10
     }
 }
 TILE_SIZE = 100
