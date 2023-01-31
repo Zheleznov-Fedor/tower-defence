@@ -47,13 +47,13 @@ def drawPlay(play, screenColor):
                     if click == 'Назад':
                         return
                     elif click == 'Лёгкий':
-                        game = Game(play.screen, 'txt/test2.csv', 1)
+                        game = Game(play.screen, 'txt/test.csv', 1)
                         game.draw()
                     elif click == 'Средний':
-                        game = Game(play.screen, 'txt/test2.csv', 20)
+                        game = Game(play.screen, 'txt/test.csv', 20)
                         game.draw()
                     elif click == 'Сложный':
-                        game = Game(play.screen, 'txt/test2.csv', 25)
+                        game = Game(play.screen, 'txt/test.csv', 25)
                         game.draw()
             if event.type == pygame.MOUSEMOTION:
                 click = play.btnClick(event.pos)
